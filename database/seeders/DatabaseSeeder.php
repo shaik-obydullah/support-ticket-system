@@ -15,11 +15,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Create 5 Users
+        \App\Models\User::factory(5)->create()->each(function ($user) {
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+            // 2. Each User gets 3 Tickets
+            \App\Models\Ticket::factory(3)->create(['user_id' => $user->id])->each(function ($ticket) {
+
+                // 3. Each Ticket gets 2 Comments
+                \App\Models\Comment::factory(2)->create([
+                    'ticket_id' => $ticket->id,
+                    'user_id' => $ticket->user_id // The ticket owner comments
+                ]);
+
+                // 4. Each Ticket gets 1 Attachment
+                \App\Models\Attachment::factory(1)->create([
+                    'ticket_id' => $ticket->id
+                ]);
+            });
+        });
     }
 }
